@@ -1,0 +1,258 @@
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+
+class Tool {
+public:
+    std::string name;
+    int cost;
+    int coinsPerClick;
+    bool isSold;
+
+    Tool(std::string name, int cost, int coinsPerClick) : name(name), cost(cost), coinsPerClick(coinsPerClick), isSold(false) {}
+};
+
+class Job {
+public:
+    std::string name;
+    int cost;
+    std::vector<Tool> tools;
+
+    Job(std::string name, int cost, std::vector<Tool> tools) : name(name), cost(cost), tools(tools) {}
+};
+
+class Game {
+public:
+    int coins = 0;
+    std::unordered_set<std::string> usedCheats;
+    std::vector<Job> jobs = {
+        Job("Фермер", 0, {
+            Tool("Руки", 0, 1),
+            Tool("Лопата", 10, 2),
+            Tool("Тяпка", 50, 5),
+            Tool("Мотыга", 100, 10),
+            Tool("Трактор", 250, 25),
+            Tool("Комбайн", 500, 50),
+            Tool("Грузовик", 1500, 150),
+            Tool("Вертолет", 5000, 500),
+            Tool("Самолет", 25000, 2500),
+            Tool("Космический корабль", 100000, 10000),
+            Tool("Телепорт", 500000, 50000)
+        }),
+        Job("Строитель", 1000000, {
+            Tool("Руки", 0, 15),
+            Tool("Кельма из мусорки", 150, 50),
+            Tool("Кельма обычного человека", 500, 150),
+            Tool("Кельма богача", 2500, 300),
+            Tool("Бульдозер", 10000, 750),
+            Tool("Трактор", 50000, 2000),
+            Tool("Грузовик", 100000, 4000),
+            Tool("Кран", 500000, 10000),
+            Tool("Самолет", 1000000, 50000),
+            Tool("Космический корабль", 2500000, 150000),
+            Tool("Телепорт", 6500000, 400000)
+        }),
+        Job("IT-шник", 10000000, {
+            Tool("Компьютер из помойки", 0, 50),
+            Tool("Дешёвый компьютер", 300, 100),
+            Tool("Обычный компютер", 1000, 300),
+            Tool("Дорогой компьютер", 5000, 600),
+            Tool("Офис компьютеров из помойки", 20000, 1500),
+            Tool("Офис дешёвых компьютеров", 100000, 4000),
+            Tool("Офис дорогих компьютеров", 200000, 8000),
+            Tool("Роботы-рабочие V1.0", 1000000, 20000),
+            Tool("Роботы-рабочие V2.0", 2000000, 100000),
+            Tool("ИИ-гений V1.0", 5000000, 300000),
+            Tool("ИИ-гений V2.0", 13000000, 800000)
+        }),
+        Job("Удачный криптоинвестор", 50000000, {
+            Tool("Демо-аккаунт", 0, 100),
+            Tool("Та самая крипта за 0.0001$", 600, 200),
+            Tool("USDC", 2000, 600),
+            Tool("XRP", 10000, 1200),
+            Tool("SOL", 40000, 3000),
+            Tool("BNB", 200000, 8000),
+            Tool("USDT", 400000, 16000),
+            Tool("ETH", 2000000, 40000),
+            Tool("BTC", 4000000, 200000),
+            Tool("BTC в кол-ве 5 штук", 10000000, 600000),
+            Tool("BTC в кол-ве 20 штук", 26000000, 1600000)
+        }),
+        Job("Президент", 150000000, {
+            Tool("Собрать долги", 0, 200),
+            Tool("Торговаться с соседями-странами", 1200, 400),
+            Tool("Издать закон", 4000, 1200),
+            Tool("Построить здания", 20000, 2400),
+            Tool("Платить гениям для будущего", 80000, 6000),
+            Tool("Построить космические корабли", 400000, 16000),
+            Tool("Построить телепорты", 800000, 32000),
+            Tool("Колонизировать другую планету", 4000000, 80000),
+            Tool("Колонизировать всю сол. систему", 8000000, 400000),
+            Tool("Колонизировать соседнюю галактику", 20000000, 1200000),
+            Tool("Колонизировать весь космос", 52000000, 3200000),
+            Tool("Конец игры", 500000000, 0)
+        }),
+    };
+    Job* currentJob = nullptr;
+    Tool* currentTool = nullptr;
+
+    void start() {
+        setlocale(LC_ALL, "RU");
+        while (true) {
+            std::cout << "У вас " << coins << " монет. Выберите действие:\n1. Пойти на работу\n2. Пойти в магазин\n3. Ввести чит-код\n4. Подать резюме на работу\n";
+            int choice;
+            std::cin >> choice;
+            if (choice == 1) {
+                work();
+            }
+            else if (choice == 2) {
+                shop();
+            }
+            else if (choice == 3) {
+                cheat();
+            }
+            else if (choice == 4) {
+                applyForJob();
+            }
+        }
+    }
+
+    void work() {
+        setlocale(LC_ALL, "RU");
+        if (currentTool) {
+            coins += currentTool->coinsPerClick;
+            std::cout << "Вы заработали " << currentTool->coinsPerClick << " монет.\n";
+        }
+        else {
+            std::cout << "У вас нет инструмента для работы. Пойдите в магазин.\n";
+        }
+    }
+
+    void shop() {
+        if (!currentJob) {
+            std::cout << "Сначала вам нужно получить работу.\n";
+            return;
+        }
+        std::cout << "В магазине есть следующие инструменты:\n";
+        for (int i = 0; i < currentJob->tools.size(); i++) {
+            if (currentJob->tools[i].isSold) {
+                std::cout << i + 1 << ". " << currentJob->tools[i].name << " - ПРОДАНО\n";
+            }
+            else {
+                std::cout << i + 1 << ". " << currentJob->tools[i].name << " - " << currentJob->tools[i].cost << " монет\n";
+            }
+        }
+        std::cout << "Выберите инструмент для покупки или экипировки:\n";
+        int choice;
+        std::cin >> choice;
+        if (choice > 0 && choice <= currentJob->tools.size()) {
+            Tool& tool = currentJob->tools[choice - 1];
+            if (!tool.isSold && coins >= tool.cost && (choice == 1 || currentJob->tools[choice - 2].isSold)) {
+                coins -= tool.cost;
+                tool.isSold = true;
+                currentTool = &tool;
+                std::cout << "Вы купили " << tool.name << " и экипировали его.\n";
+                if (tool.name == "Конец игры" && currentJob == &jobs.back()) {
+                    std::cout << "Поздравляем, вы выиграли!\n";
+                    exit(0);
+                }
+            }
+            else if (tool.isSold) {
+                currentTool = &tool;
+                std::cout << "Вы экипировали " << tool.name << ".\n";
+            }
+            else {
+                std::cout << "У вас недостаточно монет или вы еще не купили предыдущий инструмент.\n";
+            }
+        }
+    }
+
+    void cheat() {
+        setlocale(LC_ALL, "RU");
+        std::cout << "Введите чит-код или '0' для возврата в меню:\n";
+        std::string cheatCode;
+        std::cin >> cheatCode;
+        if (cheatCode == "0") {
+            return;
+        }
+        if (usedCheats.find(cheatCode) != usedCheats.end()) {
+            std::cout << "Этот чит-код уже был использован.\n";
+            return;
+        }
+        if (cheatCode == "ENDGAME") {
+            std::cout << "Поздравляем, вы выиграли!\n";
+            exit(0);
+        }
+        else if (cheatCode == "EVERYTHINGISFREE") {
+            for (Job& job : jobs) {
+                for (Tool& tool : job.tools) {
+                    tool.cost = 0;
+                }
+            }
+            std::cout << "Теперь все инструменты бесплатны.\n";
+        }
+        else if (cheatCode == "NOOB") {
+            coins += 500;
+            std::cout << "Вы получили 500 монет.\n";
+        }
+        else if (cheatCode == "PRO") {
+            coins += 5000;
+            std::cout << "Вы получили 5000 монет.\n";
+        }
+        else if (cheatCode == "HACKER") {
+            coins += 50000;
+            std::cout << "Вы получили 50000 монет.\n";
+        }
+        else if (cheatCode == "GOD") {
+            coins += 500000;
+            std::cout << "Вы получили 500000 монет.\n";
+        }
+        else if (cheatCode == "HI") {
+            coins += 1000000;
+            std::cout << "Вы получили 1000000 монет.\n";
+        }
+        else if (cheatCode == "SOMANYCOINS") {
+            coins += 100000000;
+            std::cout << "Вы получили 100000000 монет.\n";
+        }
+        else {
+            std::cout << "Неизвестный чит-код.\n";
+            return;
+        }
+        usedCheats.insert(cheatCode);
+    }
+
+    void applyForJob() {
+        setlocale(LC_ALL, "RU");
+        std::cout << "Список доступных работ:\n";
+        for (int i = 0; i < jobs.size(); i++) {
+            if (currentJob == &jobs[i]) {
+                std::cout << i + 1 << ". " << jobs[i].name << " - ВЫ УЖЕ РАБОТАЕТЕ ЗДЕСЬ\n";
+            }
+            else {
+                std::cout << i + 1 << ". " << jobs[i].name << " - " << jobs[i].cost << " монет\n";
+            }
+        }
+        std::cout << "Выберите работу, на которую хотите подать резюме:\n";
+        int choice;
+        std::cin >> choice;
+        if (choice > 0 && choice <= jobs.size()) {
+            Job& job = jobs[choice - 1];
+            if (coins >= job.cost && (!currentJob || currentJob->tools.back().isSold)) {
+                coins -= job.cost;
+                currentJob = &job;
+                currentTool = nullptr;
+                std::cout << "Вы устроились на работу " << job.name << ".\n";
+            }
+            else {
+                std::cout << "У вас недостаточно монет или вы еще не купили все инструменты на текущей работе.\n";
+            }
+        }
+    }
+};
+
+int main() {
+    Game game;
+    game.start();
+    return 0;
+}
